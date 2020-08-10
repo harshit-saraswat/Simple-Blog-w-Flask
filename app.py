@@ -6,8 +6,13 @@ Created on Sat Aug  8 01:27:05 2020
 """
 
 from flask import Flask, render_template, url_for
+from secrets import Secrets
+from forms import RegistrationForm,LoginForm
+
 
 app=Flask(__name__)
+secretsObj=Secrets()
+app.config['SECRET_KEY']=secretsObj.SECRET_KEY
 
 posts = [
         {
@@ -32,6 +37,14 @@ def home():
 @app.route("/about")
 def about():
     return render_template("about.html",title="About")
+
+@app.route("/register")
+def register():
+    pass
+
+@app.route("/login")
+def login():
+    pass
 
 if __name__=="__main__":
     app.run(debug=True)

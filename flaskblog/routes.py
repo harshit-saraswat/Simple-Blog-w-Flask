@@ -14,24 +14,10 @@ from flaskblog.forms import RegistrationForm,LoginForm, UpdateAccountForm, PostF
 from flaskblog.models import User, Post
 from flask_login import login_user, current_user, logout_user, login_required
 
-posts = [
-        {
-            'author':'harshit-saraswat',
-            'title':'Post 1',
-            'content':'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque faucibus commodo venenatis. Fusce vel feugiat enim, in bibendum sapien. Proin vel cursus mi, in tincidunt sem. Curabitur consequat justo eget feugiat varius. Sed quis pellentesque metus, nec feugiat nunc. In hac habitasse platea dictumst. Duis arcu nunc, dapibus id bibendum eget, congue nec nunc. Vestibulum accumsan velit nisl, eget hendrerit purus pharetra ac. Morbi varius erat in pulvinar interdum.',
-            'date_posted':'August 8th, 2020'
-        }, 
-        {
-            'author':'jane-doe',
-            'title':'Post 2',
-            'content':'Aliquam est nulla, pellentesque vel suscipit eget, pharetra a tellus. Interdum et malesuada fames ac ante ipsum primis in faucibus. Aliquam lacinia elit a pulvinar malesuada. Nulla congue at mauris in luctus. Nunc porta dui id sapien convallis pretium. Morbi tempus magna mauris, eu commodo velit aliquam quis. Maecenas sagittis erat ac sagittis volutpat. Curabitur erat sapien, congue sed tincidunt in, pulvinar sed augue. In ipsum arcu, hendrerit vel nulla et, sagittis gravida quam.',
-            'date_posted':'August 7th, 2020'
-        }
-    ]
-
 @app.route("/")
 @app.route("/home")
 def home():
+    posts=Post.query.all()
     return render_template("home.html",posts=posts)
 
 @app.route("/about")
@@ -108,6 +94,16 @@ def account():
 def new_post():
     form = PostForm()
     if form.validate_on_submit():
+        post=Post(title=form.title.data, content=form.content.data, author=current_user)
+        db.session.add(post)
+        db.session.commit()
         flash('Your post has been created!', 'success')
         return redirect(url_for('home'))
     return render_template("create_post.html", title="New Post", form= form)
+
+@app.route("/posts/<int:post_id>",methods=['GET','POST'])
+@login_required
+def post(post_id):
+    post=Post.query.get_or_404(post_id)
+    return render_template('post.html', title=post.title, post=post)
+    

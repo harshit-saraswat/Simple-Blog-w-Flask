@@ -10,6 +10,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flaskblog.secrets import Secrets
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
+from flask_mail import Mail
 
 app=Flask(__name__)
 secretsObj=Secrets()
@@ -20,5 +21,13 @@ bcrypt=Bcrypt(app)
 loginManager=LoginManager(app)
 loginManager.login_view='login'
 loginManager.login_message_category='info'
+
+app.config('MAIL_SERVER')='smtp.googlemail.com'
+app.config('MAIL_PORT')=587
+app.config('MAIL_USE_TLS')=True
+app.config('MAIL_USERNAME')=secretsObj.EMAIL_ADDRESS
+app.config('MAIL_PASSWORD')=secretsObj.PASSWORD
+mail=Mail(app)
+
 
 from flaskblog import routes

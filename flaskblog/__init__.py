@@ -29,5 +29,10 @@ app.config['MAIL_USERNAME']=secretsObj.EMAIL_ADDRESS
 app.config['MAIL_PASSWORD']=secretsObj.PASSWORD
 mail=Mail(app)
 
+from flaskblog.users.routes import users
+from flaskblog.posts.routes import posts
+from flaskblog.main.routes import main
 
-from flaskblog import routes
+app.register_blueprint(users)
+app.register_blueprint(posts)
+app.register_blueprint(main)

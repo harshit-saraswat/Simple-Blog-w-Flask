@@ -15,7 +15,7 @@ def new_post():
         db.session.add(post)
         db.session.commit()
         flash('Your post has been created!', 'success')
-        return redirect(url_for('home'))
+        return redirect(url_for('main.home'))
     return render_template("create_post.html", title="New Post", legend="New Post", form= form)
 
 @posts.route("/posts/<int:post_id>",methods=['GET','POST'])
@@ -35,7 +35,7 @@ def update_post(post_id):
         post.content=form.content.data
         db.session.commit()
         flash('Your post has been updated','success')
-        return redirect(url_for('post',post_id=post.id))
+        return redirect(url_for('posts.post',post_id=post.id))
     elif request.method=='GET':
         form.title.data = post.title
         form.content.data = post.content
@@ -50,5 +50,5 @@ def delete_post(post_id):
     db.session.delete(post)
     db.session.commit()
     flash('Your post has been deleted.','success')
-    return redirect(url_for('home'))
+    return redirect(url_for('main.home'))
 

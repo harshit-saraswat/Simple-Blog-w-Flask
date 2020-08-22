@@ -7,32 +7,35 @@ Created on Wed Aug  12 11:45:05 2020
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from flaskblog.secrets import Secrets
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_mail import Mail
+from flaskblog.config import Config
 
-app=Flask(__name__)
-secretsObj=Secrets()
-app.config['SECRET_KEY']=secretsObj.SECRET_KEY
-app.config['SQLALCHEMY_DATABASE_URI']="sqlite:///site.db"
-db=SQLAlchemy(app)
-bcrypt=Bcrypt(app)
-loginManager=LoginManager(app)
-loginManager.login_view='login'
+
+db=SQLAlchemy()
+bcrypt=Bcrypt()
+loginManager=LoginManager()
+loginManager.login_view='users.login'
 loginManager.login_message_category='info'
+mail=Mail()
 
-app.config['MAIL_SERVER']='smtp.googlemail.com'
-app.config['MAIL_PORT']=587
-app.config['MAIL_USE_TLS']=True
-app.config['MAIL_USERNAME']=secretsObj.EMAIL_ADDRESS
-app.config['MAIL_PASSWORD']=secretsObj.PASSWORD
-mail=Mail(app)
 
-from flaskblog.users.routes import users
-from flaskblog.posts.routes import posts
-from flaskblog.main.routes import main
+def create_app(config_class=Config):
+	app=Flask(__name__)
+	app.config.from_object(Config)
 
-app.register_blueprint(users)
-app.register_blueprint(posts)
-app.register_blueprint(main)
+	db.init_app(app)
+	bcrypt.init_app(app)
+	loginManager.init_app(app)
+	mail.init_app(app)
+
+	from flaskblog.users.routes import users
+	from flaskblog.posts.routes import posts
+	from flaskblog.main.routes import main
+
+	app.register_blueprint(users)
+	app.register_blueprint(posts)
+	app.register_blueprint(main)
+
+	return app

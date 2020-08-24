@@ -1,3 +1,4 @@
+import os
 import secrets
 from PIL import Image
 from flask import url_for, current_app
